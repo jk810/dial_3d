@@ -156,7 +156,7 @@ def network(true_xyz, true_anchors, abs_xyz, abs_anchors,
          f'{anchors[3]}]<br> Average ln size: {ln_size:.2f} nodes'
     fig.update_layout(title_text=t_, title_font_size=20, title_x=0.5)
 
-    plotly.offline.plot(fig, filename=f'{results_path}/{hop_lim}hop_map_p.html')
+    plotly.offline.plot(fig, filename=f'{results_path}/{hop_lim}hop_map_p_refined.html')
 
 
 def rmse_time(al_rmse, avg_sim_time, n_node, hop_lim, n_trial, results_path):
@@ -192,7 +192,7 @@ def rmse_time(al_rmse, avg_sim_time, n_node, hop_lim, n_trial, results_path):
             fontsize=11,
             ha='right', bbox=dict(facecolor='C0', edgecolor='k', alpha=.6))
 
-    fig.savefig(f'{results_path}/{hop_lim}hop_{n_trial}sim_rmse.png', dpi=200)
+    fig.savefig(f'{results_path}/{hop_lim}hop_{n_trial}sim_rmse_refined.png', dpi=200)
     plt.show()
 
 

@@ -170,7 +170,7 @@ def assemble_patches(all_ln_maps, anch):
 if __name__ == "__main__":
     t0 = time.time()
 
-    n_node = 5000
+    n_node = 300
     n_trial = 50
     hop_lim = 3
 
