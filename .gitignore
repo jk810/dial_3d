@@ -1,6 +1,7 @@
 .idea/
 __pycache__/
 venv/
+.vscode/
 
 3d_results_cen/**/*.txt
 3d_results_dis/**/*.txt

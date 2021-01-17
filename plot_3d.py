@@ -156,7 +156,7 @@ def network(true_xyz, true_anchors, abs_xyz, abs_anchors,
          f'{anchors[3]}]<br> Average ln size: {ln_size:.2f} nodes'
     fig.update_layout(title_text=t_, title_font_size=20, title_x=0.5)
 
-    plotly.offline.plot(fig, filename=f'{results_path}/{hop_lim}hop_map_p_refined.html')
+    plotly.offline.plot(fig, filename=f'{results_path}/{hop_lim}hop_map-p-refine.html')
 
 
 def rmse_time(al_rmse, avg_sim_time, n_node, hop_lim, n_trial, results_path):
@@ -192,7 +192,7 @@ def rmse_time(al_rmse, avg_sim_time, n_node, hop_lim, n_trial, results_path):
             fontsize=11,
             ha='right', bbox=dict(facecolor='C0', edgecolor='k', alpha=.6))
 
-    fig.savefig(f'{results_path}/{hop_lim}hop_{n_trial}sim_rmse_refined.png', dpi=200)
+    fig.savefig(f'{results_path}/{hop_lim}hop_{n_trial}sim_rmse-refine.png', dpi=200)
     plt.show()
 
 
@@ -203,15 +203,21 @@ def aggregate_rmse_time():
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    x = [100, 200, 300, 400, 500, 1000]
-    rmse = [51.49, 31.63, 22.18, 20.86, 16.93, 13.17]
-    time = [0.033, 0.065, 0.257, 0.845, 1.301, 5.760]
+    x = [100, 200, 300, 400, 500, 1000, 2000, 5000]
+    rmse = [51.3, 30.5, 22.59, 20.81, 17.42, 12.92, 8.36, 0.00]
+    time = [.064, .07, .26, .79, 1.36, 6.68, 21.26, 105.97]
+    three_rmse = [2.50, 42.02, 12.25, 61.57, 126.01, 529.87, 175.7, 638.69]
+    three_time = [3.93, 10.07, 15.63, 21.41, 26.53, 55.67, 123.22, 591.20]
+    two_rmse = [2104.18, 320.76, 456.07, 1018.45, 763.63, 664.03, 2305.89, 2203.03]
+    two_time = [4.85, 10.02, 14.57, 19.47, 25.76, 58.14, 136.65, 739.58]
+
+
 
     # cubic = [i**3/150000000 for i in x]
 
-    ax.plot(x, rmse, color='C0', marker='v', linestyle='dotted', linewidth=1,
+    ax.plot(x, three_rmse, color='C0', marker='v', linestyle='dotted', linewidth=1,
             markersize=7)
-    ax.set_xlabel('Network size [# nodes]', fontsize=12)
+    ax.set_xlabel('Network size [# nodes] *log scale', fontsize=12)
     ax.set_ylabel('RMSE [m]', fontsize=12)
     ax.grid(linestyle=':')
     ax.set_axisbelow(True)
@@ -220,17 +226,22 @@ def aggregate_rmse_time():
     ax.tick_params(axis='x', labelsize=12)
     ax.set_xticks(x)
 
+    ax.set_xscale('log')
+
     ax2 = ax.twinx()
     ax2.set_ylabel('Sim time [s]', fontsize=12)
-    ax2.plot(x, time, color='C1', marker='^', linestyle='dotted', linewidth=1,
+    ax2.plot(x, three_time, color='C1', marker='^', linestyle='dotted', linewidth=1,
              markersize=7)
     # ax2.plot(x, cubic)
     ax2.tick_params(axis='y', labelcolor='C1', labelsize=12, colors='C1')
     ax2.yaxis.label.set_color('C1')
 
-    ax.text(.5, .9, '* each point averaged over 1000 trials', transform=ax.transAxes,
+    ax.text(.5, .9, '* each point averaged over 50 trials', transform=ax.transAxes,
             fontsize=12, ha='center',
             bbox=dict(facecolor='C2', edgecolor='k', alpha=0.2))
-    ax.set_title('RMSE and Simulation Time vs Network Size', {'fontsize': 14})
+    ax.set_title('3-hop Network Distributed Algorithm RMSE and Simulation Time vs Network Size', {'fontsize': 14})
 
     plt.show()
+
+
+aggregate_rmse_time()

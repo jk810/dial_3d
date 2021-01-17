@@ -5,6 +5,8 @@ import time
 
 import numpy as np
 from sklearn import manifold
+from sklearn import metrics
+from scipy import optimize
 import networkx as nx
 
 from shortest_paths_nx import shortest_path
@@ -67,8 +69,31 @@ def mds_map(pairwise_d_array, n_list):
     # create dictionary for xyz estimates
     for i, n_ in enumerate(n_list):
         ln_xyz_dict[n_] = ln_xyz_array[i]
-
+    
     return ln_xyz_dict
+
+
+def refine_objective(pairwise_distances):
+
+
+    return d_table
+
+
+
+
+def refine_map(ln_d_table, xyz_dict):
+    """
+    Refine the result of the MDS-MAP with Levenberg-Marquardt optimization.
+    Uses the initial MDS-MAP result as the starting estimate.
+    Limited to 10 iterations of L-M optimization.
+    1 to n-hop neighbors are equally weighted.
+    """
+    keys = list(xyz_dict.keys())
+    xyz_list = list(xyz_dict.values())
+
+    refined_array = optimize.least_squares(refine_objective, xyz_list, method='lm')
+
+    return ln_xyz_dict_refine
 
 
 def kabsch(temp_map_points, temp_true_points):
@@ -170,9 +195,9 @@ def assemble_patches(all_ln_maps, anch):
 if __name__ == "__main__":
     t0 = time.time()
 
-    n_node = 300
+    n_node = 100
     n_trial = 50
-    hop_lim = 3
+    hop_lim = 2
 
     data_name = f'{n_node}sat_6con'
 
@@ -209,7 +234,8 @@ if __name__ == "__main__":
                     ln_d_table[i][j] = d_table[int(a)][int(b)]
 
             # Add the mapped ln to the aggregate dictionary
-            ln_maps[n] = mds_map(ln_d_table, ln_node_list)
+            initial_local_map = mds_map(ln_d_table, ln_node_list)
+            ln_maps[n] = refine_map(ln_d_table, initial_local_map)
 
         rel_xyz, rel_anchors = assemble_patches(ln_maps, anchors)
 
