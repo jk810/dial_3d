@@ -204,19 +204,23 @@ def aggregate_rmse_time():
     fig, ax = plt.subplots(figsize=(12, 6))
 
     x = [100, 200, 300, 400, 500, 1000, 2000, 5000]
-    rmse = [51.3, 30.5, 22.59, 20.81, 17.42, 12.92, 8.36, 0.00]
-    time = [.064, .07, .26, .79, 1.36, 6.68, 21.26, 105.97]
+    centralized_rmse = [51.3, 30.5, 22.59, 20.81, 17.42, 12.92, 8.36, 0.00]
+    centralized_time = [.064, .07, .26, .79, 1.36, 6.68, 21.26, 105.97]
     three_rmse = [2.50, 42.02, 12.25, 61.57, 126.01, 529.87, 175.7, 638.69]
     three_time = [3.93, 10.07, 15.63, 21.41, 26.53, 55.67, 123.22, 591.20]
     two_rmse = [2104.18, 320.76, 456.07, 1018.45, 763.63, 664.03, 2305.89, 2203.03]
     two_time = [4.85, 10.02, 14.57, 19.47, 25.76, 58.14, 136.65, 739.58]
 
+    x1 = [100, 200, 300, 400, 500, 1000, 2000]
+    refined_two_rmse = [1382.05, 668.9, 570.88, 775.08, 961.75, 1232.83, 2715.82]
+    refined_two_time = [5.87, 13.56, 20.23, 26.95, 33.01, 71.25, 180.16]
 
 
     # cubic = [i**3/150000000 for i in x]
 
-    ax.plot(x, three_rmse, color='C0', marker='v', linestyle='dotted', linewidth=1,
+    ax.plot(x1, refined_two_rmse, color='C0', marker='v', linestyle='dotted', linewidth=1,
             markersize=7)
+
     ax.set_xlabel('Network size [# nodes] *log scale', fontsize=12)
     ax.set_ylabel('RMSE [m]', fontsize=12)
     ax.grid(linestyle=':')
@@ -224,13 +228,13 @@ def aggregate_rmse_time():
     ax.tick_params(axis='y', labelcolor='C0', labelsize=12, colors='C0')
     ax.yaxis.label.set_color('C0')
     ax.tick_params(axis='x', labelsize=12)
-    ax.set_xticks(x)
+    ax.set_xticks(x1)
 
     ax.set_xscale('log')
 
     ax2 = ax.twinx()
     ax2.set_ylabel('Sim time [s]', fontsize=12)
-    ax2.plot(x, three_time, color='C1', marker='^', linestyle='dotted', linewidth=1,
+    ax2.plot(x1, refined_two_time, color='C1', marker='^', linestyle='dotted', linewidth=1,
              markersize=7)
     # ax2.plot(x, cubic)
     ax2.tick_params(axis='y', labelcolor='C1', labelsize=12, colors='C1')
@@ -239,7 +243,7 @@ def aggregate_rmse_time():
     ax.text(.5, .9, '* each point averaged over 50 trials', transform=ax.transAxes,
             fontsize=12, ha='center',
             bbox=dict(facecolor='C2', edgecolor='k', alpha=0.2))
-    ax.set_title('3-hop Network Distributed Algorithm RMSE and Simulation Time vs Network Size', {'fontsize': 14})
+    ax.set_title('2-hop Network Refined Distributed Algorithm RMSE and Simulation Time vs Network Size', {'fontsize': 14})
 
     plt.show()
 

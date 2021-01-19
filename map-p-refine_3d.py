@@ -7,6 +7,7 @@ import numpy as np
 from sklearn import manifold
 from sklearn import metrics
 from scipy import optimize
+from scipy.spatial import distance_matrix
 import networkx as nx
 
 from shortest_paths_nx import shortest_path
@@ -73,27 +74,46 @@ def mds_map(pairwise_d_array, n_list):
     return ln_xyz_dict
 
 
-def refine_objective(pairwise_distances):
+def refine_objective(coeff, ln_distance_table, map_xyz_array):
+    """
+    Objective function for the least squares optimization. Calculates pairwise
+    distance of local neighborhood mapping estimate, then calculates distance
+    matrix between true ln_distance_table and estimates ln_d_table
+    """
+
+    # calculate distance table of mapped xyz_array
+    map_distance_table = metrics.pairwise_distances(map_xyz_array)
+
+    err = distance_matrix(ln_distance_table, map_distance_table)
+
+    return np.mean(err)
 
 
-    return d_table
-
-
-
-
-def refine_map(ln_d_table, xyz_dict):
+def refine_map(ln_d_table, initial_mds_map):
     """
     Refine the result of the MDS-MAP with Levenberg-Marquardt optimization.
     Uses the initial MDS-MAP result as the starting estimate.
     Limited to 10 iterations of L-M optimization.
-    1 to n-hop neighbors are equally weighted.
+    1 to n-hop neighbors are equally weighted (not tracking n_hop value in 
+    ln_d_table)
     """
-    keys = list(xyz_dict.keys())
-    xyz_list = list(xyz_dict.values())
+    keys = list(initial_mds_map.keys())
+    xyz_array = np.array(list(initial_mds_map.values()))
 
-    refined_array = optimize.least_squares(refine_objective, xyz_list, method='lm')
+    refined_array = optimize.minimize(refine_objective, xyz_array, args=(ln_d_table, xyz_array))
 
-    return ln_xyz_dict_refine
+    # not sure how coords is ordered: x1, x2, x3, ... x2, y1, y2, y3, ... yn, 
+    # assuming it is x1, y1, z1, ..., xn, yn, zn
+    coords = refined_array.x
+
+    grouped_coords = np.split(coords, int(len(coords)/3))
+
+    grouped_coords_dict = {}
+
+    for i, j in enumerate(keys):
+        grouped_coords_dict[j] = grouped_coords[i]
+
+    return grouped_coords_dict
 
 
 def kabsch(temp_map_points, temp_true_points):
@@ -195,9 +215,9 @@ def assemble_patches(all_ln_maps, anch):
 if __name__ == "__main__":
     t0 = time.time()
 
-    n_node = 100
+    n_node = 400
     n_trial = 50
-    hop_lim = 2
+    hop_lim = 3
 
     data_name = f'{n_node}sat_6con'
 
@@ -236,7 +256,7 @@ if __name__ == "__main__":
             # Add the mapped ln to the aggregate dictionary
             initial_local_map = mds_map(ln_d_table, ln_node_list)
             ln_maps[n] = refine_map(ln_d_table, initial_local_map)
-
+        
         rel_xyz, rel_anchors = assemble_patches(ln_maps, anchors)
 
         R, t = kabsch(rel_anchors, true_anchors)
