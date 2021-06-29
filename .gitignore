@@ -5,3 +5,4 @@ venv/
 
 3d_results_cen/**/*.txt
 3d_results_dis/**/*.txt
+dial_2d/2d_results/

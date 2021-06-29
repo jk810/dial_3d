@@ -1,0 +1,64 @@
+======================================== Approach
+- demonstrate utility and feasibility
+- demonstrate the idea, don't perfect a product
+- favor tasks you can complete quickly
+
+In a multihop sensor network with a set of beacon nodes, localization problem
+    is to find the position of as many dumb nodes as possible
+Plan:
+    - Create test scenarios (2d, then 3d)
+    - Choose appropriate LA based on assumptions (a priori distance knowledge,
+        range-based vs range-free, distributed vs centralized, absolute vs
+            local, symmetric vs asymmetric)
+    - Implement LA
+    - Evaluate
+
+Research questions:
+    - How many anchor nodes are necessary? How should they be deployed?
+        (ratio, density, placement, self-configuration)
+    - Can we assume pair-wise distances are known? Or must they be estimated?
+
+======================================== Notes
+Convex position estimation
+- centralized
+Ad hoc positioning system
+- range-free distributed, but uses multilateration
+DV-based methods
+- requires dense, regular topologies and many anchor nodes for multilateration
+- in general: lateration-based methods require nodes localized one at a time
+    - MDS uses all connectivity information between dumb and settled nodes
+MDS-MAP
+- centralized, works best in dense uniform networks
+- estimates positions along a propagation path with src/dst as anchors
+MDS-MAP(P)
+- good for uniform and irregular networks
+- partially distributed - central used to construct global map
+
+https://blog.paperspace.com/dimension-reduction-with-multi-dimension-scaling/
+- metric MDS used for quantitative data
+- non-metric MDS used for ordinal data
+
+Range-free MDS
+- no exact solution, usually formulated as an optimization problem with many
+    local minima
+
+======================================== Plan
+Questions:
+- assume already have LN information?, distance vs connectivity
+- need to make local map for every single node? how many really necessary?
+- LN hop limit
+- uncertainty in position and range measurements
+- how many anchor nodes necessary
+- performance: position error, # of settled vs unfound nodes, compute time
+
+Baseline assumptions:
+- nodes already have LN information - don't have to build them
+- assume nodes have distance information
+
+- mds_map assumes full pair_wise distance knowledge - not necessarily a problem
+    if using distance tables from packet
+    - have to construct distance tables for each patch
+- if doing classical mds-map, need to modify run_sim to use radio_range as
+    limiter on n_cons?
+
+- map(p) uses LN nodes to build patches
